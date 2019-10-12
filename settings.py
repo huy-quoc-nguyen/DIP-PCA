@@ -36,3 +36,5 @@ LOGGING_CONFIG = {
         }
     }
 }
+
+DATA_PATH = get_env('DATA_PATH', './resources/*')
