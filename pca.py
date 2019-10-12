@@ -14,13 +14,17 @@ class PCA(LazyLog):
         super().__init__()
         assert len(dataset.shape) == 2
         self._n_samples, self._n_features = dataset.shape
-        self.logger.debug({
+        self.logger.info({
             'msg': 'Shape of input data',
             'value': dataset.shape
         })
 
+        # Change mean to zero
+        self._mean = np.mean(dataset, axis=0)
+        self._dataset = dataset - self._mean
+
         # Calculate covariance matrix of features
-        self._covariance_matrix = (1 / (self._n_samples - 1)) * np.matmul(dataset.transpose(), dataset)
+        self._covariance_matrix = (1 / (self._n_samples - 1)) * np.matmul(dataset.transpose(), self._dataset)
         assert self._covariance_matrix.shape == (self._n_features, self._n_features)
         self.logger.debug({
             'msg': 'Covariance matrix',
@@ -56,7 +60,7 @@ class PCA(LazyLog):
         assert len(vectors.shape) == 2
         assert vectors.shape[1] == self._n_features
         assert n_reduced_features < len(self._eigenvalues)
-        return np.matmul(vectors, self._eigenvectors[:, :n_reduced_features])
+        return np.matmul(vectors - self._mean, self._eigenvectors[:, :n_reduced_features])
 
     def project_and_restore(self, vectors: np.ndarray, n_reduced_features: int) -> np.ndarray:
         """
@@ -66,4 +70,4 @@ class PCA(LazyLog):
         :param n_reduced_features: An integer, which is number of features to be reduced
         """
         projected = self.project(vectors, n_reduced_features)
-        return np.matmul(projected, self._eigenvectors[:, :n_reduced_features].transpose())
+        return np.matmul(projected, self._eigenvectors[:, :n_reduced_features].transpose()) + self._mean
