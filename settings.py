@@ -10,7 +10,7 @@ LOG_LEVEL_CONFIG = (lambda lvl: lvl if lvl in map(
                         logging.getLevelName,
                         [logging.CRITICAL, logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG]
                     ) else logging.getLevelName(logging.INFO))(
-    get_env('LOG_LEVEL_CONFIG', 'DEBUG')
+    get_env('LOG_LEVEL_CONFIG', 'INFO')
 )
 LOGGING_CONFIG = {
     'version': 1,
